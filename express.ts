@@ -5,17 +5,31 @@ class Server {
 
     constructor(){
         this.app = express()
+        this.app.use(express.static('public')) //vai buscar arquivos dentro da pasta public
+        this.app.listen(5001)
     }
 
     public getRoute(){
         return this.app.get("/", (req:express.Request, res:express.Response)=>{
-            res.send("okkkkk")
-        }).listen(5001)
+            return res.send("okkkkk")
+        })
     }
 
     public postLoginRoute(){
-        return this.app.post('/login', (req, res)=>{
-            res.send("POST recebido em /login")
+        return this.app.post('/login', (req:express.Request, res:express.Response)=>{
+            return res.send("POST recebido em /login")
+        })
+    }
+
+    public putSettingsRoute(){
+        return this.app.put("/settings", (req:express.Request, res:express.Response)=>{
+            return res.send("Settings alteradas")
+        })
+    }
+
+    public deleteRoute(){
+        return this.app.delete("/logs", (req, res)=>{
+            return res.send("logs deleted")
         })
     }
 
@@ -24,3 +38,5 @@ class Server {
 const server:Server  = new Server();
 server.getRoute();
 server.postLoginRoute();
+server.putSettingsRoute();
+server.deleteRoute();
