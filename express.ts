@@ -10,9 +10,10 @@ class Server {
     public getRoute(){
         this.app.get("/", (req:express.Request, res:express.Response)=>{
             res.send("okkkkk")
-        })
+        }).listen(5001)
     }
 
 }
 
 const server:Server  = new Server();
+server.getRoute();
