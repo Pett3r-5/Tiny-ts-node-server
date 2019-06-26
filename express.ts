@@ -1,4 +1,6 @@
 import express = require("express");
+import productRouter from "./routes/product"
+import * as bodyParser from "body-parser"
 
 
 
@@ -12,7 +14,14 @@ class Server {
         this.app.listen(5001)
     }
 
+    public getApp(): express.Application{
+        return this.app;
+    }
+
     public defineMiddlewares(): void {
+        this.app.use(bodyParser.json())
+        this.app.use('/login', this.dataAtual)
+
         this.app.all("/admin", (req, res, next)=>{
             console.log(`admin request do tipo ${req.method}`)
             return next()
@@ -24,6 +33,11 @@ class Server {
         })
     }
 
+    public dataAtual (req: express.Request, res: express.Response, next: express.NextFunction): void {
+        console.log("new date:" + new Date())
+        return next()
+    }
+
     public getRoute(): express.Application {
         return this.app.get("/", (req:express.Request, res:express.Response)=>{
             return res.send("okkkkk")
@@ -32,6 +46,7 @@ class Server {
 
     public postLoginRoute(): express.Application {
         return this.app.post('/login', (req:express.Request, res:express.Response)=>{
+            console.log("req body: " + JSON.stringify(req.body, undefined, 4))
             return res.send("POST recebido em /login")
         })
     }
@@ -79,6 +94,7 @@ server.getRoute();
 server.postLoginRoute();
 server.putSettingsRoute();
 server.deleteRoute();
-server.getAdminRoute();
+
 server.getIds();
 server.getJSON();
+//server.getApp().use('/products', server.getAdminRoute)

@@ -1,0 +1,14 @@
+[
+    {"id": "1", "nome": "Porto Alegre", "estado": "RS"},
+    {"id": "2", "nome": "Canoas", "estado": "RS"},
+    {"id": "3", "nome": "São Leopoldo", "estado": "RS"},
+    {"id": "4", "nome": "Florianópolis", "estado": "SC"},
+    {"id": "5", "nome": "Criciúma", "estado": "SC"},
+    {"id": "6", "nome": "São Paulo", "estado": "SP"},
+    {"id": "7", "nome": "Campinas", "estado": "SP"},
+    {"id": "8", "nome": "Salvador", "estado": "BA"},
+    {"id": "9", "nome": "Porto Seguro", "estado": "BA"},
+    {"id": "10", "nome": "Belo Horizonte", "estado": "MJ"},
+    {"id": "11", "nome": "Rio de Janeiro", "estado": "RJ"},
+    {"id": "12", "nome": "Vitória", "estado": "ES"}
+]
