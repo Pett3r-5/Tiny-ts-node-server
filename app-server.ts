@@ -3,7 +3,7 @@ import productRouter from "./routes/product"
 import * as bodyParser from "body-parser"
 let cidadesJsons = require("./jsons/cidades.json")
 let estadosJsons = require("./jsons/estados.json")
-const {estados} = require("./geo-api/mongo-singleton")
+const {estados, cidades} = require("./geo-api/mongo-singleton")
 
 
 
@@ -50,7 +50,7 @@ router.get("/", async(req: express.Request, res: express.Response)=> {
 router.post("/", async(req: express.Request, res: express.Response)=> {
     const {sigla, nome} = req.body
 
-    if(!sigla || !nome){
+    if(!sigla || !nome) {
         return res.status(400).send("faltando sigla ou nome")
     }
 
@@ -72,14 +72,23 @@ router.post("/", async(req: express.Request, res: express.Response)=> {
     
 })
 
-router.get("/:sigla", (req: express.Request, res: express.Response)=> {
-    //let {sigla} = req.params
-    req.body = {sigla: req.params.sigla};
+router.get("/:sigla", async(req: express.Request, res: express.Response)=> {
+    let {sigla} = req.params
+    //req.body = {sigla: req.params.sigla};
     let response;
-    response = estadosJsons.filter((elem:any)=> {
-        return elem.sigla === req.params.sigla.toUpperCase()
-    })
+    //response = estadosJsons.filter((elem:any)=> {
+    //    return elem.sigla === sigla.toUpperCase()
+    //})
     console.log("/estados/:sigla")
+    try {
+        let Estados = await estados()
+        response = await Estados.findOne({sigla})
+    } catch(err0r){
+        console.log(err0r)
+        return res.sendStatus(500)
+    }
+
+
     return res.json(response)
 })
 
@@ -90,40 +99,85 @@ const router2:express.Router = express.Router()
 //app.use("/:sigla", router)
 
 
-router2.get("/cidades", (req: express.Request, res: express.Response)=> {
+app.get("/estados/:sigla/cidades", async(req: express.Request, res: express.Response)=> {
     //let sigla = req.body.sigla
-    console.log('req.params')
-    console.log(req.url)
-    let sigla = req.body.sigla
-    let response;
-    response = cidadesJsons.filter((elem:any)=> {
-        return elem.estado === sigla.toUpperCase()
-    })
 
-    return res.json(response)
+    let {sigla} = req.params
+    let responseCidade;
+    //response = cidadesJsons.filter((elem:any)=> {
+    //    return elem.estado === sigla.toUpperCase()
+    //})
+    try {
+        let Cidades = await cidades()
+        responseCidade = await Cidades.find({estado: sigla.toUpperCase()}).toArray()
+    } catch(err0r) {
+        console.log(err0r)
+        return res.sendStatus(500)
+    }
+    return res.json(responseCidade)
 })
 
-router2.get("/cidades/:id", (req: express.Request, res: express.Response)=> {
+app.get("/estados/:sigla/cidades/:id", async(req: express.Request, res: express.Response)=> {
     let {id} = req.params
+    let responseCidade;
 
-    let response;
-    response = cidadesJsons.filter((elem:any)=> {
-        return Number(elem.id) === Number(id)
-    })
+    try {
 
-    return res.json(response)
+        let Cidades = await cidades()
+        responseCidade = await Cidades.find({id: id}).toArray()
+    } catch(err0r) {
+        console.log(err0r)
+        return res.sendStatus(500)
+    }
+
+    //let response;
+    //response = cidadesJsons.filter((elem:any)=> {
+    //    return Number(elem.id) === Number(id)
+    //})
+
+    return res.json(responseCidade)
 })
 
-app.use("/estados/:sigla", router2)
+//app.use("/estados/:sigla", router2)
 
-app.post("/estados/:sigla", (req, res)=> {
-    const {id, nome } = req.body;
-    const {sigla} = req.params
-    const obj =  {
-            id,
-            nome,
-            estados: sigla
-        }
+app.post("/estados", async(req: express.Request, res: express.Response)=> {
+    const {nome, sigla} = req.body;
+    let responseEstado;
+
+    try {
+        let Estados = await estados()
+        responseEstado = await Estados.insertOne({nome: nome, sigla: sigla})
+    } catch(err0r) {
+        console.log(err0r)
+        return res.sendStatus(500)
+    }
+
+    if(!!responseEstado.result && !responseEstado.result.ok){
+        return res.sendStatus(500)
+    }
+    
+    return res.sendStatus(201)
+    
+})
+
+app.post("/estados/:sigla/cidades", async(req: express.Request, res: express.Response)=> {
+    const {nome, id} = req.body;
+    let {sigla} = req.params
+    sigla = sigla.toUpperCase()
+
+    let responseCidade;
+
+    try {
+        let Cidades = await cidades()
+        responseCidade = await Cidades.insertOne({id: id, nome: nome, sigla: sigla})
+    } catch(err0r) {
+        console.log(err0r)
+        return res.sendStatus(500)
+    }
+
+    if(!!responseCidade.result && !responseCidade.result.ok){
+        return res.sendStatus(500)
+    }
     
     return res.sendStatus(201)
     
