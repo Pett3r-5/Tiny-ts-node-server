@@ -5,6 +5,6 @@ mongodDb.MongoClient.connect("mongodb://localhost:27017/teste01", (err:any, clie
     if(err){
         console.log(err)
     }
-    const db:mongodDb.MongoClient.Db = client.db()
+    const db = client.db()
     console.log("mongo online")
 })

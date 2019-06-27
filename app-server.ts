@@ -3,6 +3,9 @@ import productRouter from "./routes/product"
 import * as bodyParser from "body-parser"
 let cidadesJsons = require("./jsons/cidades.json")
 let estadosJsons = require("./jsons/estados.json")
+const {estados} = require("./geo-api/mongo-singleton")
+
+
 
 // import default from "./routes/estados"
 
@@ -29,9 +32,44 @@ const auth = (req:express.Request, res:express.Response, next:express.NextFuncti
 
 app.use(auth)
 
-router.get("/", (req: express.Request, res: express.Response)=> {
+router.get("/", async(req: express.Request, res: express.Response)=> {
     console.log("estados1")
-    return res.json(estadosJsons)
+    let Estados
+    let result
+    try {
+        Estados = await estados();
+        result = await Estados.find({}).toArray()
+    } catch(err){
+        console.log(err)
+        return res.sendStatus(500)
+    }
+    
+    return res.json(result)
+})
+
+router.post("/", async(req: express.Request, res: express.Response)=> {
+    const {sigla, nome} = req.body
+
+    if(!sigla || !nome){
+        return res.status(400).send("faltando sigla ou nome")
+    }
+
+    const estado = {sigla, nome}
+    let result
+    try {
+        let es = await estados()
+        result = await es.insertOne(estado)
+    } catch(err0r){
+        console.log(err0r)
+        return res.sendStatus(500)
+    }
+    
+
+    if(!result.result.ok){
+        return res.sendStatus(500)
+    }
+    return res.status(201).send("okkkkk")
+    
 })
 
 router.get("/:sigla", (req: express.Request, res: express.Response)=> {
@@ -47,14 +85,15 @@ router.get("/:sigla", (req: express.Request, res: express.Response)=> {
 
 app.use("/estados", router)
 
-
+const router2:express.Router = express.Router()
 
 //app.use("/:sigla", router)
 
-router.get("/cidades", (req: express.Request, res: express.Response)=> {
+
+router2.get("/cidades", (req: express.Request, res: express.Response)=> {
     //let sigla = req.body.sigla
     console.log('req.params')
-    console.log(req.params)
+    console.log(req.url)
     let sigla = req.body.sigla
     let response;
     response = cidadesJsons.filter((elem:any)=> {
@@ -64,7 +103,7 @@ router.get("/cidades", (req: express.Request, res: express.Response)=> {
     return res.json(response)
 })
 
-router.get("/cidades/:id", (req: express.Request, res: express.Response)=> {
+router2.get("/cidades/:id", (req: express.Request, res: express.Response)=> {
     let {id} = req.params
 
     let response;
@@ -75,7 +114,7 @@ router.get("/cidades/:id", (req: express.Request, res: express.Response)=> {
     return res.json(response)
 })
 
-app.use("/:sigla", router)
+app.use("/estados/:sigla", router2)
 
 app.post("/estados/:sigla", (req, res)=> {
     const {id, nome } = req.body;
