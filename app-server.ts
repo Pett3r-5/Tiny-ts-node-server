@@ -9,7 +9,7 @@ let estadosJsons = require("./jsons/estados.json")
 const app:express.Application = express()
 const router:express.Router = express.Router()
 
-router.use(bodyParser.json())
+app.use(bodyParser.json())
 
 const auth = (req:express.Request, res:express.Response, next:express.NextFunction)=> {
     const {authorization} = req.headers

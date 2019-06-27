@@ -7,8 +7,9 @@ mongodDb.MongoClient.connect("mongodb://localhost:27017/teste01", async (err:any
     }
     const db = client.db()
     const query = await queryFind(db)
-    console.log("mongo online")
+    
     console.log(query)
+    console.log("mongo online")
     client.close();
 })
 
@@ -20,8 +21,8 @@ const queryOne = async(db:any) => {
     })
 }
 
-const queryMany = async(db:any)=> {
-    await db.collection("usuarios").insertMany(
+const queryMany = (db:any)=> {
+    return db.collection("usuarios").insertMany(
         [
             {
                 nome: "nome2",
@@ -34,6 +35,9 @@ const queryMany = async(db:any)=> {
         ])
 }
 
-const queryFind = async(db:any)=> {
-    return await db.collection("usuarios").find({}, {projection: { _id: 0, nome:1}}).toArray()
-}
+const queryFind = (db:any): Array<Object> => db.collection("usuarios").find({nome:{$regex: ".*noM.*", $options: 'i'} }, {projection: { _id: 0, nome:1}}).toArray()
+
+const queryUpdate = (db:any): Object => db.collection("usuarios").updateOne({nome: "nome2"}, {$set: {email: "t@gmail.com"}})
+
+const deleteUser = (db:any): Object => db.collection("usuarios").deleteOne({nome: "nome3"})
+
