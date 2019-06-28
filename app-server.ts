@@ -169,7 +169,7 @@ app.post("/estados/:sigla/cidades", async(req: express.Request, res: express.Res
 
     try {
         let Cidades = await cidades()
-        responseCidade = await Cidades.insertOne({id: id, nome: nome, sigla: sigla})
+        responseCidade = await Cidades.insertOne({id: id, nome: nome, estado: sigla})
     } catch(err0r) {
         console.log(err0r)
         return res.sendStatus(500)
