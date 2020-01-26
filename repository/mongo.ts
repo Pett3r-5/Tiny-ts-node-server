@@ -1,17 +1,6 @@
 //import * as mongodDb from "mongodb"
 const mongodDb = require("mongodb")
 
-mongodDb.MongoClient.connect("mongodb://localhost:27017/teste01", async (err:any, client:any)=> {
-    if(err){
-        console.log(err)
-    }
-    const db = client.db()
-    const query = await queryFind(db)
-    
-    console.log(query)
-    console.log("mongo online")
-    client.close();
-})
 
 const queryOne = async(db:any) => {
     const collection = db.collection("usuarios")

@@ -1,5 +1,4 @@
 import express = require("express");
-import productRouter from "./routes/product"
 import * as bodyParser from "body-parser"
 let cidadesJsons = require("./jsons/cidades.json")
 let estadosJsons = require("./jsons/estados.json")
